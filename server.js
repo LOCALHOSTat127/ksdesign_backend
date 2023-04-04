@@ -10,7 +10,7 @@ import cors from "cors";
 // importing routes
 import communicationRouter from "./Routes/communications/communication.js";
 import paymentRouter from "./Routes/Razorpay/payments.js";
-
+import dbrouter from "./Routes/firebasedb/firebaseRoute.js";
 
 
 // SERVER Configurations.
@@ -62,7 +62,7 @@ SERVER.use(
 // server-routes-config
 SERVER.use("/communication",communicationRouter);
 SERVER.use('/payment',paymentRouter);
-
+SERVER.use('/db',dbrouter);
 
 // Listening on Server.
 http.createServer(SERVER).listen(SERVER_PORT,SERVER_HOST,(error) =>{
