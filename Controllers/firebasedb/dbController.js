@@ -1,6 +1,14 @@
 import { FIREBASE_DB } from "../../utils/Auth/firebase_init.js";
 
 export default class datebase_Controller {
+    static NEW_ORDER_TEMPLATE = {
+        isOrderVerified: false,
+        isConfirmationDone: false,
+        isOrderActive: true,
+        AD_DETAILS: null
+    }
+
+
     static get_newspapers = async (req, res) => {
         const newspapers_collection = [];
 
@@ -70,24 +78,24 @@ export default class datebase_Controller {
     }
 
     // get_category(s)
-    static get_category_list = async (req,res) =>{
+    static get_category_list = async (req, res) => {
         let data = [];
         let snapshot = await FIREBASE_DB.collection("CATEGORY_s").get();
 
-        snapshot?.forEach(doc =>{
+        snapshot?.forEach(doc => {
             data.push(doc.data());
         })
 
-        if(data?.length > 0){
+        if (data?.length > 0) {
             res.status(200).json({
-                status : 200,
-                status_txt : "ok",
-                data : {
-                    items : data?.length,
-                    category_list : data
+                status: 200,
+                status_txt: "ok",
+                data: {
+                    items: data?.length,
+                    category_list: data
                 }
             })
-        }else{
+        } else {
             res.status(400).json({
                 status: 400,
                 status_txt: "Records not found!"
@@ -96,6 +104,32 @@ export default class datebase_Controller {
 
 
         return;
+    }
+
+
+    // create_new_order
+    static create_new_order = async (order_details) => {
+
+        this.NEW_ORDER_TEMPLATE.AD_DETAILS = order_details;
+        this.NEW_ORDER_TEMPLATE.isOrderVerified = true;
+
+        const order_document_id = order_details.payment_configuration.captured_payment.payment_id;
+        await FIREBASE_DB.collection("ORDERS").doc(order_document_id).set(this.NEW_ORDER_TEMPLATE);
+    }
+
+    // get_order_by_id
+    static get_order_by_id = async (orderID) => {
+        let snapshot = await FIREBASE_DB.collection("ORDERS").doc(orderID).get();
+        return snapshot.data();
+    }
+
+
+    // update_order_status_by_id
+    static update_order_by_id = async (orderID,key,value) => {
+        await FIREBASE_DB.collection("ORDERS").doc(orderID).update({
+            [key] : value
+        });
+
     }
 }
 

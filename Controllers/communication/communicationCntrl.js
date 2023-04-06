@@ -1,5 +1,5 @@
 import Communication_Provider from "../../utils/cummonication/Communication.js";
-
+import datebase_Controller from "../firebasedb/dbController.js";
 export default class CommunicationController {
 
     // email_template_configs
@@ -8,25 +8,25 @@ export default class CommunicationController {
             txt: "This is Text",
             subject: "This is Subject",
             Template_file_name: "file_name",
-            Template_type: "Full Query Email Self"
+            Template_type: "FULL_QUERY"
         },
         {
             txt: "This is Text",
             subject: "This is Subject",
             Template_file_name: "file_name",
-            Template_type: "Small Query Email Self"
+            Template_type: "SMALL_QUERY"
+        },
+        {
+            txt: "This is Text",
+            subject: "New Order",
+            Template_file_name: "file_name",
+            Template_type: "NEW_ORDER_SELF"
         },
         {
             txt: "This is Text",
             subject: "This is Subject",
             Template_file_name: "file_name",
-            Template_type: "New Order Email Self"
-        },
-        {
-            txt: "This is Text",
-            subject: "This is Subject",
-            Template_file_name: "file_name",
-            Template_type: "New Order Email Customer"
+            Template_type: "NEW_ORDER_CUSTOMER"
         }
 
     ]
@@ -133,9 +133,63 @@ export default class CommunicationController {
 
     // new_order_mail_self
     static NEW_ORDER_SELF_MAIL = async (req, res) => {
-        res.status(200).json({
-            status: "new order email sent"
-        })
+
+        const orderID = req.body?.orderID ? req.body?.orderID : null;
+
+        if (orderID === null) {
+            res.json({
+                status: 404,
+                err_msg: "OrderID required!"
+            })
+            return 0;
+        }
+
+        // quering database for order.
+        const order_response = await datebase_Controller.get_order_by_id(orderID);
+
+        if (order_response === null || order_response === undefined) {
+            res.json({
+                status: 404,
+                err_msg: "Order Not Found!"
+            })
+            return 0;
+        }
+
+
+        // sending confirmaiton-email-self
+        // USER-INPU-VALIDATION-SUCCESS-SENDING-EMAIL
+        // generating-msg
+        const EMAIL_MSG = Communication_Provider.createEmailMSG(process.env.SERVER_SMTP_SERVICE_EMAIL, this.TEMPLETE_CONFIGS[2]);
+        if (EMAIL_MSG === null) {
+            res.json({
+                status: 404,
+                err_msg: "Error while Creating Email."
+            })
+            return;
+        }
+
+
+        // sending-email
+        const EMAIL_SUCCESS_CONFIG = await Communication_Provider.sendEmail(EMAIL_MSG);
+        if (EMAIL_SUCCESS_CONFIG.status_code === 200) {
+            await datebase_Controller.update_order_by_id(orderID,'isConfirmationDone',true);
+
+
+            res.status(EMAIL_SUCCESS_CONFIG.status_code).json({
+                status: EMAIL_SUCCESS_CONFIG.status_code,
+                msg: EMAIL_SUCCESS_CONFIG.status_msg,
+                msg_id: EMAIL_SUCCESS_CONFIG.msg_id
+            })
+            return;
+        } else {
+
+            res.status(EMAIL_SUCCESS_CONFIG.status_code).json({
+                status: EMAIL_SUCCESS_CONFIG.status_code,
+                msg: EMAIL_SUCCESS_CONFIG.status_msg,
+            })
+            return;
+        }
+
     }
 
 
