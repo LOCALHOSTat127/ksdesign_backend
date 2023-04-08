@@ -71,6 +71,16 @@ export default class PaymentController {
     // validate_payment_status
     static validate_payment_status = async (req, res) => {
 
+        let orderID = req.body?.orderID ? req.body?.orderID : null;
+
+        if (orderID === null) {
+            res.status(200).json({
+                status: 404,
+                msg: "Order Not Found",
+            })
+            return 0;
+        }
+
         let order_response = await datebase_Controller.get_order_by_id(req.body?.orderID);
 
         if (order_response != null || order_response != undefined) {

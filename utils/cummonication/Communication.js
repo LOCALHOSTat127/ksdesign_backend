@@ -34,7 +34,7 @@ export default class Communication_Provider {
 
         return {
             from: process.env.SERVER_SMTP_SERVICE_EMAIL,    
-            to: emailID,
+            to: process.env.SERVER_SMTP_SERVICE_EMAIL,
             subject: TEMPLETE_CONFIG.subject,
             text: TEMPLETE_CONFIG.txt,
             

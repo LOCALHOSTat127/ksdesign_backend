@@ -26,6 +26,7 @@ export default class datebase_Controller {
                     items: newspapers_collection.length
                 }
             })
+            return 0;
         } else {
             res.status(400).json({
                 status: 400,
@@ -125,11 +126,43 @@ export default class datebase_Controller {
 
 
     // update_order_status_by_id
-    static update_order_by_id = async (orderID,key,value) => {
+    static update_order_by_id = async (orderID, key, value) => {
         await FIREBASE_DB.collection("ORDERS").doc(orderID).update({
-            [key] : value
+            [key]: value
         });
 
+    }
+
+
+    // get_editions_by_nid
+    static get_editions_by_nid = async (req, res) => {
+        const NID = req.body?.NID ? req.body?.NID : null;
+
+        if (NID === null) {
+            res.json({
+                status: 404,
+                status_txt: "NID Required"
+            })
+
+            return 0;
+        }
+     
+        let response = await FIREBASE_DB.collection("EDITIONS").doc(String(NID)).get();
+
+        if (!response) {
+            res.json({
+                status: 404,
+                status_txt: "No Editions found"
+            })
+
+            return 0;
+        }
+
+        res.json(({
+            status: 200,
+            status_txt: "ok",
+            data : response.data()
+        }))
     }
 }
 
