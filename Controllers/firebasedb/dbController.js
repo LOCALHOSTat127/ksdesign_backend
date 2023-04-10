@@ -44,37 +44,48 @@ export default class datebase_Controller {
             category_id: req.body.category_id ? req.body.category_id : null
         }
 
+
         if (query_.category_config_id === null || query_.category_id === null) {
-            res.status(400).json({
+            res.status(200).json({
                 status: 400,
                 status_txt: "all feilds required"
             })
 
             return;
-        } else {
-
-            let snapshot = await FIREBASE_DB.collection("CAT_CONFGS").doc(query_.category_config_id).collection("CONFIGS_CC").doc(query_.category_id).get();
-            let data = snapshot.data();
-
-            if (data) {
-                res.status(200).json({
-                    status: 200,
-                    status_txt: "ok",
-                    data: {
-                        category_config: data
-                    }
-                })
-            } else {
-                res.status(400).json({
-                    status: 400,
-                    status_txt: "Record not found!"
-                })
-
-
-            }
-            return;
-
         }
+
+        let snapshot = await FIREBASE_DB.collection("CAT_CONFGS").doc(query_.category_config_id).collection("CONFIGS_CC").doc(query_.category_id).get();
+        let snapshow_two = await FIREBASE_DB.collection("CAT_CONFGS").doc(query_.category_config_id).get();
+        let data = snapshot.data();
+        let data_tow = snapshow_two.data();
+
+       
+
+        if (!data || !data_tow) {
+            res.status(200).json({
+                status: 400,
+                status_txt: "no record found!"
+            })
+            return 0;
+        }
+    
+      
+        const dispatch_response = {
+            headingconfig: data.heading_config != null ? {
+                categorys: data.heading_config,
+            } : null,
+            paller_rules: data.pallet_rules,
+            from_the_paper: data_tow.from_the_newspaper,
+            newspaper_name: data_tow.CAT_CONFIG_NAME,
+            special_enhansment: data.special_enhansments_config,
+        }
+
+        res.status(200).json({
+            status: 200,
+            status_txt: "ok",
+            data: dispatch_response
+        })
+
 
     }
 
@@ -146,7 +157,7 @@ export default class datebase_Controller {
 
             return 0;
         }
-     
+
         let response = await FIREBASE_DB.collection("EDITIONS").doc(String(NID)).get();
 
         if (!response) {
@@ -161,7 +172,7 @@ export default class datebase_Controller {
         res.json(({
             status: 200,
             status_txt: "ok",
-            data : response.data()
+            data: response.data()
         }))
     }
 }

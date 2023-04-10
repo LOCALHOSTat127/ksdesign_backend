@@ -5,19 +5,19 @@ export default class CommunicationController {
     // email_template_configs
     static TEMPLETE_CONFIGS = [
         {
-            txt: "This is Text",
-            subject: "This is Subject",
+            txt: "This is full query",
+            subject: "This is full query",
             Template_file_name: "file_name",
             Template_type: "FULL_QUERY"
         },
         {
-            txt: "This is Text",
-            subject: "This is Subject",
+            txt: "This is small query",
+            subject: "This is small query",
             Template_file_name: "file_name",
             Template_type: "SMALL_QUERY"
         },
         {
-            txt: "This is Text",
+            txt: "This is new order",
             subject: "New Order",
             Template_file_name: "file_name",
             Template_type: "NEW_ORDER_SELF"
@@ -92,7 +92,7 @@ export default class CommunicationController {
 
         // USER-INPU-VALIDATION-SUCCESS-SENDING-EMAIL
         // generating-msg
-        const EMAIL_MSG = Communication_Provider.createEmailMSG(USER_INPUT_DATA.user_email, this.TEMPLETE_CONFIGS[1]);
+        const EMAIL_MSG = Communication_Provider.createEmailMSG(USER_INPUT_DATA.user_email, this.TEMPLETE_CONFIGS[0]);
 
         if (EMAIL_MSG === null) {
             res.status(500).json({
@@ -123,10 +123,40 @@ export default class CommunicationController {
     }
 
     // small-customer-contact-form
-    static SM_CUSTOMER_CONTACT_FORM = async (req, red) => {
-        res.status(200).json({
-            status: "small query email sent."
-        })
+    static SM_CUSTOMER_CONTACT_FORM = async (req, res) => {
+        const emailID = req.body?.emailID ? req.body?.emailID : null;
+
+        if (emailID === null) {
+            res.status(200).json({
+                status: 404,
+                status_txt: "Valid Email ID Required."
+            })
+            return false;
+        }
+
+
+        // USER-INPU-VALIDATION-SUCCESS-SENDING-EMAIL
+        // generating-msg
+        const EMAIL_MSG = Communication_Provider.createEmailMSG(emailID, this.TEMPLETE_CONFIGS[1]);
+
+        // sending-email
+        const EMAIL_SUCCESS_CONFIG = await Communication_Provider.sendEmail(EMAIL_MSG);
+        if (EMAIL_SUCCESS_CONFIG.status_code === 200) {
+            res.status(EMAIL_SUCCESS_CONFIG.status_code).json({
+                status: EMAIL_SUCCESS_CONFIG.status_code,
+                msg: EMAIL_SUCCESS_CONFIG.status_msg,
+                msg_id: EMAIL_SUCCESS_CONFIG.msg_id
+            })
+            return true;
+        } else {
+            res.status(EMAIL_SUCCESS_CONFIG.status_code).json({
+                status: EMAIL_SUCCESS_CONFIG.status_code,
+                err_msg: EMAIL_SUCCESS_CONFIG.status_msg,
+            })
+            return true;
+        }
+
+
     }
 
 
