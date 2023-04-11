@@ -7,10 +7,12 @@ import cors from "cors";
 
 
 
+
 // importing routes
 import communicationRouter from "./Routes/communications/communication.js";
 import paymentRouter from "./Routes/Razorpay/payments.js";
 import dbrouter from "./Routes/firebasedb/firebaseRoute.js";
+
 
 
 // SERVER Configurations.
@@ -52,6 +54,8 @@ SERVER.use(
         noSniff: false,
     })
 )
+
+
 
 
 

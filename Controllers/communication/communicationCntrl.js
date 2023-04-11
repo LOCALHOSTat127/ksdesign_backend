@@ -6,9 +6,9 @@ export default class CommunicationController {
     static TEMPLETE_CONFIGS = [
         {
             txt: "This is full query",
-            subject: "This is full query",
+            subject: "A Customer Query Received.",
             Template_file_name: "file_name",
-            Template_type: "FULL_QUERY"
+            Template_type: "fullquery"
         },
         {
             txt: "This is small query",
@@ -17,10 +17,10 @@ export default class CommunicationController {
             Template_type: "SMALL_QUERY"
         },
         {
-            txt: "This is new order",
-            subject: "New Order",
+            txt: "New Order Received",
+            subject: "New Order Received",
             Template_file_name: "file_name",
-            Template_type: "NEW_ORDER_SELF"
+            Template_type: "neworder"
         },
         {
             txt: "This is Text",
@@ -89,10 +89,19 @@ export default class CommunicationController {
         }
 
 
+        const date = new Date();
 
         // USER-INPU-VALIDATION-SUCCESS-SENDING-EMAIL
         // generating-msg
-        const EMAIL_MSG = Communication_Provider.createEmailMSG(USER_INPUT_DATA.user_email, this.TEMPLETE_CONFIGS[0]);
+        const EMAIL_MSG = Communication_Provider.createEmailMSG(USER_INPUT_DATA.user_email,
+            this.TEMPLETE_CONFIGS[0], {
+            CONTACT__REASON: USER_INPUT_DATA.reason_to_contact,
+            FIRST_NAME: USER_INPUT_DATA.first_name,
+            LAST_NAME: USER_INPUT_DATA.last_name,
+            EMAIL_ID: USER_INPUT_DATA.user_email,
+            MOBILE_NUMBER: USER_INPUT_DATA.phone,
+            DATE_OF_CONTACT: `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`
+        });
 
         if (EMAIL_MSG === null) {
             res.status(500).json({
@@ -185,10 +194,21 @@ export default class CommunicationController {
         }
 
 
+        const date = new Date();
+
+
         // sending confirmaiton-email-self
         // USER-INPU-VALIDATION-SUCCESS-SENDING-EMAIL
         // generating-msg
-        const EMAIL_MSG = Communication_Provider.createEmailMSG(process.env.SERVER_SMTP_SERVICE_EMAIL, this.TEMPLETE_CONFIGS[2]);
+        const EMAIL_MSG = Communication_Provider.createEmailMSG(process.env.SERVER_SMTP_SERVICE_EMAIL, this.TEMPLETE_CONFIGS[2],{
+            ORDER_ID : order_response.AD_DETAILS.payment_configuration.captured_payment.order_id,
+            DATE_OF_ORDER_BOOKED : `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`,
+            CONTACT_NAME : order_response.AD_DETAILS.payment_configuration.contact_detaild.contact_person_name,
+            CONTACT_MOBILE : order_response.AD_DETAILS.payment_configuration.contact_detaild.contact_phone,
+            CONTACT_EMAIL : order_response.AD_DETAILS.payment_configuration.contact_detaild.contact_email,
+            DOCUMENT_NAME : order_response.AD_DETAILS.payment_configuration.documents_bucket.docs[0].file_name, 
+            DOWNLOAD_URL : order_response.AD_DETAILS.payment_configuration.documents_bucket.docs[0].download_url
+        });
         if (EMAIL_MSG === null) {
             res.json({
                 status: 404,

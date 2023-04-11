@@ -2,7 +2,10 @@
 import nodemailer from "nodemailer";
 import * as dotenv from 'dotenv'
 import validator from "validator";
+import handlebars from "handlebars";
 import fs from "fs";
+import path from "path";
+
 
 dotenv.config();
 
@@ -18,6 +21,9 @@ export default class Communication_Provider {
     });
 
 
+
+
+
     // validate-email
     static verifyEmail = (emailID) => {
         if (validator.isEmail(emailID) === true) {
@@ -29,15 +35,17 @@ export default class Communication_Provider {
 
 
     // create-email
-    static createEmailMSG = (emailID,TEMPLETE_CONFIG) => {
-        // let htmlstream = fs.createReadStream("./email_templates/demo.html");
+    static createEmailMSG = (emailID, TEMPLETE_CONFIG,CONTEXT) => {
+      
+        const emailTemplateSource = fs.readFileSync(path.join(`/home/white/p/ksdesignserver/email_templates/${TEMPLETE_CONFIG.Template_type}.hbs`), "utf8")
+        const template = handlebars.compile(emailTemplateSource)
+        const htmlToSend = template({...CONTEXT});
 
         return {
-            from: process.env.SERVER_SMTP_SERVICE_EMAIL,    
+            from: process.env.SERVER_SMTP_SERVICE_EMAIL,
             to: process.env.SERVER_SMTP_SERVICE_EMAIL,
             subject: TEMPLETE_CONFIG.subject,
-            text: TEMPLETE_CONFIG.txt,
-            
+            html : htmlToSend
         }
     }
 
