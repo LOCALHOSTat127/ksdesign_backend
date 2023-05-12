@@ -16,9 +16,9 @@ export default class PaymentController {
 
     static createNewOrder = async (req, res) => {
         const payment_config = {
-            amount: req.body?.amount || null,
-            currency: req.body?.currency || null,
-            receipt_id: req.body?.receipt || null
+            amount: req.body.amount || null,
+            currency: req.body.currency || null,
+            receipt_id: req.body.receipt || null
         }
 
 
@@ -37,9 +37,9 @@ export default class PaymentController {
     static verifyPayment = async (req, res) => {
         // extracting payment response
         const payment_response = {
-            payment_id: req.body.ad_config.payment_configuration.captured_payment?.payment_id || null,
-            order_id: req.body.ad_config.payment_configuration.captured_payment?.order_id || null,
-            signature: req.body.ad_config.payment_configuration.captured_payment?.signature || null,
+            payment_id: req.body.ad_config.payment_configuration.captured_payment.payment_id || null,
+            order_id: req.body.ad_config.payment_configuration.captured_payment.order_id || null,
+            signature: req.body.ad_config.payment_configuration.captured_payment.signature || null,
         }
 
 
@@ -71,7 +71,7 @@ export default class PaymentController {
     // validate_payment_status
     static validate_payment_status = async (req, res) => {
 
-        let orderID = req.body?.orderID ? req.body?.orderID : null;
+        let orderID = req.body.orderID ? req.body.orderID : null;
 
         if (orderID === null) {
             res.status(200).json({
@@ -81,7 +81,7 @@ export default class PaymentController {
             return 0;
         }
 
-        let order_response = await datebase_Controller.get_order_by_id(req.body?.orderID);
+        let order_response = await datebase_Controller.get_order_by_id(req.body.orderID);
 
         if (order_response != null || order_response != undefined) {
             res.status(200).json({

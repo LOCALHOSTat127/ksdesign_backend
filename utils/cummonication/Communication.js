@@ -33,14 +33,13 @@ export default class Communication_Provider {
         }
     }
 
-
+   
     // create-email
-    static createEmailMSG = (emailID, TEMPLETE_CONFIG,CONTEXT) => {
+    static createEmailMSG = (TEMPLETE_CONFIG,CONTEXT) => {
       
-        const emailTemplateSource = fs.readFileSync(path.join(`/home/white/p/ksdesignserver/email_templates/${TEMPLETE_CONFIG.Template_type}.hbs`), "utf8")
+        const emailTemplateSource = fs.readFileSync(path.join(`/home/sahil/projects/ksdesign_backend/email_templates/${TEMPLETE_CONFIG.Template_file_name}.hbs`), "utf8")
         const template = handlebars.compile(emailTemplateSource)
         const htmlToSend = template({...CONTEXT});
-
         return {
             from: process.env.SERVER_SMTP_SERVICE_EMAIL,
             to: process.env.SERVER_SMTP_SERVICE_EMAIL,
