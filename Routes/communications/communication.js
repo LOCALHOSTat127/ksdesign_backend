@@ -11,6 +11,8 @@ communicationRouter.route('/full_contact_query').post(CommunicationController.FU
 communicationRouter.route('/new_order_self_mail').post(CommunicationController.NEW_ORDER_SELF_MAIL);
 communicationRouter.route('/new_order_self_wsp').post(CommunicationController.NEW_ORDER_SELF_WSP);
 communicationRouter.route('new_order_customer_mail').post(CommunicationController.NEW_ORDER_CUSTOMER_MAIL);
+communicationRouter.route('/new_ad_service_query').post(CommunicationController.NEW_AD_ORDER_QUERY);
+
 
 
 export default communicationRouter;

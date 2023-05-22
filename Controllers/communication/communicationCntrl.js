@@ -18,14 +18,37 @@ export default class CommunicationController {
     {
       txt: "New Order Received",
       subject: "New Order Received",
-      Template_file_name: "neworder",
-      Template_type: "NEW_ORDER",
+      Template_file_name: "fullquery",
     },
     {
       txt: "This is Text",
       subject: "This is Subject",
       Template_file_name: "file_name",
       Template_type: "NEW_ORDER_CUSTOMER",
+    },
+    {
+      txt: "New Order Query for Radio Adversitement",
+      subject: "New Order Query for Radio Adversitement",
+      Template_file_name: "radioorder",
+      Template_type: "NEW_RADIO_QUERY",
+    },
+    {
+      txt: "New Order Query for Telivision Adversitement",
+      subject: "New Order Query for Telivision Adversitement",
+      Template_file_name: "tvorder",
+      Template_type: "NEW_TV_QUERY",
+    },
+    {
+      txt: "New Order Query for Digital Marketing Adversitement",
+      subject: "New Order Query for Digital Marketing Adversitement",
+      Template_file_name: "marketingorder",
+      Template_type: "NEW_TV_QUERY",
+    },
+    {
+      txt: "New Order Query for Auto/E-Riksha Adversitement",
+      subject: "New Order Query for Auto/E-Riksha Adversitement",
+      Template_file_name: "fullquery",
+      Template_type: "NEW_AUTO_AD_QUERY",
     },
   ];
 
@@ -230,7 +253,7 @@ export default class CommunicationController {
         ORDER_ID:
           order_response.AD_DETAILS.payment_configuration.captured_payment
             .order_id,
-            DATE_OF_ORDER_BOOKED: `${date.getDate()}-${
+        DATE_OF_ORDER_BOOKED: `${date.getDate()}-${
           date.getMonth() + 1
         }-${date.getFullYear()}`,
         CONTACT_NAME:
@@ -296,5 +319,168 @@ export default class CommunicationController {
     res.status(200).json({
       status: "new order customer mail sent",
     });
+  };
+
+  // New AD_ORDER_QUERY
+  static NEW_AD_ORDER_QUERY = async (req, res) => {
+    const ORDER_CONFIG = {
+      ORDER_TYPE: null,
+      CONTACT: {
+        NAME: null,
+        EMAIL: null,
+        PHONE: null,
+      },
+      RADIO_AD: {
+        STATION: null,
+        LOCATION: null,
+        LENGTH: null,
+        FREQUENCY: null,
+        DURATION: null,
+      },
+      TV_AD: {
+        CHANNEL: null,
+        LENGTH: null,
+        FREQUENCY: null,
+        DURATION: null,
+      },
+      MARKETING_AD: {
+        PLATFORMS_TO_AD: null,
+        CURRENT_BUDGET: null,
+        TOTAL_ACCOUNTS: null,
+        INSTA_LINK: null,
+        FB_LINK: null,
+        TWITTER_LINK: null,
+      },
+    };
+    console.log(ORDER_CONFIG);
+    let AD_TYPE = req.body.ad_type;
+    ORDER_CONFIG.CONTACT.NAME = req?.body?.name;
+    ORDER_CONFIG.CONTACT.EMAIL = req?.body?.email;
+    ORDER_CONFIG.CONTACT.PHONE = req?.body?.phone;
+
+    if (AD_TYPE === "RADIO") {
+      ORDER_CONFIG.RADIO_AD.STATION = req?.body?.station;
+      ORDER_CONFIG.RADIO_AD.LOCATION = req?.body?.location;
+      ORDER_CONFIG.RADIO_AD.LENGTH = req?.body?.adlength;
+      ORDER_CONFIG.RADIO_AD.FREQUENCY = req?.body?.frequency;
+      ORDER_CONFIG.RADIO_AD.DURATION = req?.body?.duration;
+    } else if (AD_TYPE === "TV") {
+      ORDER_CONFIG.TV_AD.CHANNEL = req?.body?.channel;
+      ORDER_CONFIG.TV_AD.LENGTH = req?.body?.adlength;
+      ORDER_CONFIG.TV_AD.FREQUENCY = req?.body?.frequency;
+      ORDER_CONFIG.TV_AD.DURATION = req?.body?.duration;
+    } else if (AD_TYPE === "MARKETING") {
+      ORDER_CONFIG.MARKETING_AD.PLATFORMS_TO_AD = req?.body?.platforms;
+      ORDER_CONFIG.MARKETING_AD.CURRENT_BUDGET = req?.body?.budget;
+      ORDER_CONFIG.MARKETING_AD.TOTAL_ACCOUNTS = req?.body?.total_acc;
+      ORDER_CONFIG.MARKETING_AD.INSTA_LINK = req?.body?.insta_link;
+      ORDER_CONFIG.MARKETING_AD.FB_LINK = req?.body?.fb_link;
+      ORDER_CONFIG.MARKETING_AD.TWITTER_LINK = req?.body?.twitter_link;
+    }
+
+    // generating-msg
+    const date = new Date();
+
+    // USER-INPU-VALIDATION-SUCCESS-SENDING-EMAIL
+    // generating-msg
+    const TEMPLATE_CONFIG_ID =
+      AD_TYPE === "AUTO_AD"
+        ? 7
+        : AD_TYPE === "RADIO"
+        ? 4
+        : AD_TYPE === "TV"
+        ? 5
+        : AD_TYPE === "MARKETING"
+        ? 6
+        : 0;
+
+    let EMAIL_MSG = null;
+    if (AD_TYPE === "RADIO") {
+      EMAIL_MSG = Communication_Provider.createEmailMSG(
+        this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID],
+        {
+          CONTACT__REASON: this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID].subject,
+          FIRST_NAME: ORDER_CONFIG.CONTACT.NAME,
+          LAST_NAME: "",
+          EMAIL_ID: ORDER_CONFIG.CONTACT.EMAIL,
+          MOBILE_NUMBER: ORDER_CONFIG.CONTACT.PHONE,
+          DATE_OF_CONTACT: `${date.getDate()}-${
+            date.getMonth() + 1
+          }-${date.getFullYear()}`,
+          ...ORDER_CONFIG.RADIO_AD,
+        }
+      );
+    } else if (AD_TYPE === "TV") {
+      EMAIL_MSG = Communication_Provider.createEmailMSG(
+        this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID],
+        {
+          CONTACT__REASON: this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID].subject,
+          FIRST_NAME: ORDER_CONFIG.CONTACT.NAME,
+          LAST_NAME: "",
+          EMAIL_ID: ORDER_CONFIG.CONTACT.EMAIL,
+          MOBILE_NUMBER: ORDER_CONFIG.CONTACT.PHONE,
+          DATE_OF_CONTACT: `${date.getDate()}-${
+            date.getMonth() + 1
+          }-${date.getFullYear()}`,
+          ...ORDER_CONFIG.TV_AD,
+        }
+      );
+    } else if (AD_TYPE === "MARKETING") {
+      EMAIL_MSG = Communication_Provider.createEmailMSG(
+        this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID],
+        {
+          CONTACT__REASON: this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID].subject,
+          FIRST_NAME: ORDER_CONFIG.CONTACT.NAME,
+          LAST_NAME: "",
+          EMAIL_ID: ORDER_CONFIG.CONTACT.EMAIL,
+          MOBILE_NUMBER: ORDER_CONFIG.CONTACT.PHONE,
+          DATE_OF_CONTACT: `${date.getDate()}-${
+            date.getMonth() + 1
+          }-${date.getFullYear()}`,
+          ...ORDER_CONFIG.MARKETING_AD,
+        }
+      );
+    } else {
+      EMAIL_MSG = Communication_Provider.createEmailMSG(
+        this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID],
+        {
+          CONTACT__REASON: this.TEMPLETE_CONFIGS[TEMPLATE_CONFIG_ID].subject,
+          FIRST_NAME: ORDER_CONFIG.CONTACT.NAME,
+          LAST_NAME: "",
+          EMAIL_ID: ORDER_CONFIG.CONTACT.EMAIL,
+          MOBILE_NUMBER: ORDER_CONFIG.CONTACT.PHONE,
+          DATE_OF_CONTACT: `${date.getDate()}-${
+            date.getMonth() + 1
+          }-${date.getFullYear()}`,
+        }
+      );
+    }
+
+    if (EMAIL_MSG === null) {
+      res.status(500).json({
+        status: 400,
+        err_msg: "Error while creating EmailMSG",
+      });
+      return;
+    }
+
+    // sending-email
+    const EMAIL_SUCCESS_CONFIG = await Communication_Provider.sendEmail(
+      EMAIL_MSG
+    );
+    if (EMAIL_SUCCESS_CONFIG.status_code === 200) {
+      res.status(EMAIL_SUCCESS_CONFIG.status_code).json({
+        status: EMAIL_SUCCESS_CONFIG.status_code,
+        msg: EMAIL_SUCCESS_CONFIG.status_msg,
+        msg_id: EMAIL_SUCCESS_CONFIG.msg_id,
+      });
+      return true;
+    } else {
+      res.status(EMAIL_SUCCESS_CONFIG.status_code).json({
+        status: EMAIL_SUCCESS_CONFIG.status_code,
+        err_msg: EMAIL_SUCCESS_CONFIG.status_msg,
+      });
+      return true;
+    }
   };
 }

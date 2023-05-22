@@ -48,7 +48,8 @@ export default class datebase_Controller {
     if (
       client_req.cid === null ||
       client_req.nid === null ||
-      client_req.total_eiditions === null
+      client_req.total_eiditions === null ||
+      client_req.total_eiditions <= 0
     ) {
       res.status(200).json({
         status: 404,
@@ -69,20 +70,22 @@ export default class datebase_Controller {
 
     const db_response = await FIREBASE_DB.getAll(...doc_refs);
 
-   
-
     db_response.forEach((doccard) => {
-      edition_cards.push(doccard.data());
+      if (doccard.data()) {
+        edition_cards.push(doccard.data());
+      }
     });
 
+
+
     if (edition_cards.length <= 0) {
-        res.status(200).json({
-          status: 404,
-          txt: "Records Not Found!",
-        });
-  
-        return true;
-      }
+      res.status(200).json({
+        status: 404,
+        txt: "Records Not Found!",
+      });
+
+      return true;
+    }
 
     res.status(200).json({
       status: 200,
@@ -109,6 +112,8 @@ export default class datebase_Controller {
     const db_response = await FIREBASE_DB.collection("PACKAGES")
       .doc(`PKGID_${client_req.nid}_${client_req.cid}`)
       .get();
+
+    console.log(db_response.data());
 
     if (!db_response) {
       res.status(200).json({
