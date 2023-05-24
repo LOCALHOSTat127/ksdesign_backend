@@ -1,12 +1,3 @@
-import { FIREBASE_DB } from "./utils/Auth/firebase_init.js";
+import PaytmController from "./Controllers/Paytm/paymentControllerNew.js";
 
-
-
-
-
-const PACKAGES  = [
-    
-]
-
-
-console.log("OK");
+PaytmController.GENERATE_CHECKSUM();
