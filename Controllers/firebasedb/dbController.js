@@ -76,8 +76,6 @@ export default class datebase_Controller {
       }
     });
 
-
-
     if (edition_cards.length <= 0) {
       res.status(200).json({
         status: 404,
@@ -112,8 +110,6 @@ export default class datebase_Controller {
     const db_response = await FIREBASE_DB.collection("PACKAGES")
       .doc(`PKGID_${client_req.nid}_${client_req.cid}`)
       .get();
-
-    console.log(db_response.data());
 
     if (!db_response) {
       res.status(200).json({
@@ -217,14 +213,32 @@ export default class datebase_Controller {
 
   // create_new_order
   static create_new_order = async (order_details) => {
+    try {
+      const response = await FIREBASE_DB.collection("LATEST_ORDER_ID").doc("LATEST_ORDER_ID_NEW").get();
+    let full_id = await response.data().id;
+    let new_order_id = `ORDER_ID_${Number(full_id.split("_")[2]) + 1}`;
+
+
+    await FIREBASE_DB.collection("LATEST_ORDER_ID").doc("LATEST_ORDER_ID_NEW").set({
+      id : new_order_id
+    });
+
     this.NEW_ORDER_TEMPLATE.AD_DETAILS = order_details;
     this.NEW_ORDER_TEMPLATE.isOrderVerified = true;
-
-    const order_document_id =
-      order_details.payment_configuration.captured_payment.payment_id;
     await FIREBASE_DB.collection("ORDERS")
-      .doc(order_document_id)
+      .doc(new_order_id)
       .set(this.NEW_ORDER_TEMPLATE);
+
+      return {
+        status : 200
+      }
+    } catch (error) {
+      return {
+        status : 500,
+        err : true,
+        msg : "Please Try Again After some time."
+      }
+    }
   };
 
   // get_order_by_id

@@ -352,7 +352,7 @@ export default class CommunicationController {
         TWITTER_LINK: null,
       },
     };
-    console.log(ORDER_CONFIG);
+
     let AD_TYPE = req.body.ad_type;
     ORDER_CONFIG.CONTACT.NAME = req?.body?.name;
     ORDER_CONFIG.CONTACT.EMAIL = req?.body?.email;
