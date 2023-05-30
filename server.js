@@ -30,7 +30,7 @@ dotenv.config();
 SERVER.use(helmet.contentSecurityPolicy({
     useDefaults: true,
     directives: {
-        "font-src": ["'self'", "ksadspublish.com"],
+        "font-src": ["'self'", "ksadsonline.com"],
         "style-src": null,
     },
 }));
