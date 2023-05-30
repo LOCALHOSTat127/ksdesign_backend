@@ -18,7 +18,7 @@ import dbrouter from "./Routes/firebasedb/firebaseRoute.js";
 // SERVER Configurations.
 const SERVER = express();
 const SERVER_PORT = process.env.PORT || 5000;
-const SERVER_HOST = '172.20.10.2';
+
 
 
 
@@ -70,13 +70,10 @@ SERVER.use('/db', dbrouter);
 
 
 
+SERVER.listen(SERVER_PORT, () => {
+    console.log(`server started on port ${SERVER_PORT}`);
+  });
 
-// Listening on Server.
-http.createServer(SERVER).listen(SERVER_PORT, SERVER_HOST, (error) => {
-    if (error) {
-        console.log(error.code);
-    } else {
-        console.log(`Server running on http://${SERVER_HOST}:${SERVER_PORT}`);
-    }
-})
+
+
 
